@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AegisCare — Medical Help Bot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Hero/Header -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="brand-icon" aria-hidden="true">
+        <!-- Stethoscope icon -->
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M6 3v5a4 4 0 1 0 8 0V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M14 8h0a6 6 0 0 1-12 0H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="19" cy="11" r="3" stroke="currentColor" stroke-width="2"/>
+          <path d="M19 14v3a4 4 0 0 1-4 4h-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Presenting <span class="brand">AegisCare</span></h1>
+        <p class="tagline">Your friendly medical help bot — not a substitute for professional care.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Chat Card -->
+  <main class="chat-shell">
+    <section class="chat-card">
+      <div id="messages" class="messages" role="log" aria-live="polite">
+        <div class="msg bot">
+          <div class="bubble">👋 Hi! Ask me a medical question and I’ll answer from your knowledge base.</div>
+        </div>
+      </div>
+
+      <form id="chat-form" class="composer" autocomplete="off">
+        <input id="msg" name="msg" type="text" placeholder="Type your question…" required />
+        <button id="send-btn" type="submit" aria-label="Send">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path d="M3 11l17-8-8 17-1-6-6-3z" fill="currentColor"/>
+          </svg>
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('msg');
+    const msgs  = document.getElementById('messages');
+    const btn   = document.getElementById('send-btn');
+
+    function append(role, text) {
+      const wrap = document.createElement('div');
+      wrap.className = `msg ${role}`;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      wrap.appendChild(bubble);
+      msgs.appendChild(wrap);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      append('you', msg);
+      input.value = '';
+      input.focus();
+
+      // show a lightweight typing indicator
+      const typing = document.createElement('div');
+      typing.className = 'msg bot typing';
+      typing.innerHTML = '<div class="bubble">…</div>';
+      msgs.appendChild(typing);
+      msgs.scrollTop = msgs.scrollHeight;
+
+      try {
+        const res = await fetch('{{ url_for("chat") }}', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ msg })
+        });
+
+        // backend returns plain text
+        const text = await res.text();
+        typing.remove();
+        append('bot', text || 'Sorry, I did not get a response.');
+      } catch (err) {
+        typing.remove();
+        append('bot', 'Network error. Please try again.');
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
