@@ -1,5 +1,9 @@
 # Productionize-Medical-Chatbot-with-LLMs-LangChain-Pinecone-Flask-AWS
 
+Author - Trishul 
+
+<img width="1254" height="754" alt="Image" src="https://github.com/user-attachments/assets/3a98a2f3-f472-4852-be21-6e2ad5574b15" />
+
 
 ### STEPS:
 
