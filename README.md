@@ -1,4 +1,4 @@
-# Productionize-Medical-Chatbot-with-LLMs-LangChain-Pinecone-Flask-AWS
+# Productionize-RAG-Medical-Chatbot-with-LLMs-LangChain-Pinecone-Flask-AWS
 
 Author - Trishul 
 
